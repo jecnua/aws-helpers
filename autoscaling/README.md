@@ -36,3 +36,9 @@ But if you don't change the Terraform, it will revert it.
         enabled_metrics.3551801763: "GroupInServiceInstances" => ""
         enabled_metrics.4118539418: "GroupMinSize" => ""
         enabled_metrics.4136111317: "GroupMaxSize" => ""
+
+### Requirements
+
+To install requirements:
+
+    pip install --user -r requirements.txt
