@@ -2,54 +2,63 @@
 import sys
 import boto3
 import pprint
-from fabric.colors import red, yellow
+from fabric.colors import red, yellow, green
 
-AUTOSCALING_GROUP_NAME = sys.argv[1]
+VERBOSE=False
 
 #
-def date2str(dt):
+def __date2str(dt):
     return(dt.strftime("%Y %m %d %H:%M:%S GMT"))
 
 #
-def check():
-    client = boto3.client('autoscaling')
+def __check_ag(ag):
     ec2_client = boto3.client('ec2')
     # pp = pprint.PrettyPrinter(indent=4)
-
-    print(AUTOSCALING_GROUP_NAME)
-
-    response = client.describe_auto_scaling_groups(
-        AutoScalingGroupNames=[
-            AUTOSCALING_GROUP_NAME,
-        ],
-        MaxRecords=1
-    )
-
-    # print (response)
-
-    print("LaunchConfigurationName: ")
-    print(response['AutoScalingGroups'][0]['LaunchConfigurationName'])
-
-    instances = response['AutoScalingGroups'][0]['Instances']
-
-    # print (response['AutoScalingGroups'][0]['Instances'])
+    # pp.pprint(ag)
+    print("Checking "+ag['AutoScalingGroupName'])
+    if VERBOSE:
+        print("LaunchConfigurationName: " + ag['LaunchConfigurationName'])
+    instances = ag['Instances']
     for instance in instances:
         test = ""
-        if instance['LaunchConfigurationName'] != response['AutoScalingGroups'][0]['LaunchConfigurationName']:
+        if instance['LaunchConfigurationName'] != ag['LaunchConfigurationName']:
             an_instance = ec2_client.describe_instances(
                 InstanceIds=[
                     instance['InstanceId'],
                 ],
             )
-            # pp.pprint(instance['Reservations'][0]['Instances'][0]['LaunchTime'])
-            date = date2str(an_instance['Reservations'][0]['Instances'][0]['LaunchTime'])
+            date = __date2str(an_instance['Reservations'][0]['Instances'][0]['LaunchTime'])
             test = red(" == DIFFERENT == " + date)
-        print(instance['InstanceId'] + ": " + instance['LaunchConfigurationName'] + test)
-        if instance['LaunchConfigurationName'] != response['AutoScalingGroups'][0]['LaunchConfigurationName']:
+        if instance['LaunchConfigurationName'] != ag['LaunchConfigurationName']:
+            print(instance['InstanceId'] + ": " + instance['LaunchConfigurationName'] + test)
             print("To terminate the instance:")
             print(yellow("aws autoscaling terminate-instance-in-auto-scaling-group --instance-id " + instance['InstanceId'] + " --no-should-decrement-desired-capacity"))
-            print("")
+            print("# https://docs.aws.amazon.com/cli/latest/reference/autoscaling/terminate-instance-in-auto-scaling-group.html")
+        else:
+            if VERBOSE:
+                print(instance['InstanceId'] + ": " + instance['LaunchConfigurationName'] + test)
+#
+def check_single(ag_name):
+    client = boto3.client('autoscaling')
+    response = client.describe_auto_scaling_groups(
+        AutoScalingGroupNames=[
+            ag_name,
+        ],
+        MaxRecords=1
+    )
+    __check_ag(response['AutoScalingGroups'][0])
 
-    #https://docs.aws.amazon.com/cli/latest/reference/autoscaling/terminate-instance-in-auto-scaling-group.html
+#
+def check_all():
+    client = boto3.client('autoscaling')
+    response = client.describe_auto_scaling_groups()
+    print(green("Checking " + str(len(response['AutoScalingGroups'])) + " autoscaling roups"))
+    for ag in response['AutoScalingGroups']:
+        __check_ag(ag)
 
-check()
+if len(sys.argv) == 1:
+    check_all()
+if len(sys.argv) == 2:
+    AUTOSCALING_GROUP_NAME = sys.argv[1]
+    print(green("Checking 1 autoscaling roups"))
+    check_single(AUTOSCALING_GROUP_NAME)
