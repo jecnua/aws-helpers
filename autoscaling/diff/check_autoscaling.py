@@ -1,27 +1,27 @@
 #
 import sys
-import boto3
 import pprint
+import boto3
 from fabric.colors import red, yellow, green
 
 VERBOSE = False
 
 
-def __date2str(dt):
-    return(dt.strftime("%Y %m %d %H:%M:%S GMT"))
+def __date2str(dts):
+    return dts.strftime("%Y %m %d %H:%M:%S GMT")
 
 
-def __check_ag(ag):
+def __check_ag(aws_ag):
     ec2_client = boto3.client('ec2')
     # pp = pprint.PrettyPrinter(indent=4)
-    # pp.pprint(ag)
-    print("Checking " + ag['AutoScalingGroupName'])
+    # pp.pprint(aws_ag)
+    print("Checking " + aws_ag['AutoScalingGroupName'])
     if VERBOSE:
-        print("LaunchConfigurationName: " + ag['LaunchConfigurationName'])
-    instances = ag['Instances']
+        print("LaunchConfigurationName: " + aws_ag['LaunchConfigurationName'])
+    instances = aws_ag['Instances']
     for instance in instances:
         test = ""
-        if instance['LaunchConfigurationName'] != ag[
+        if instance['LaunchConfigurationName'] != aws_ag[
                 'LaunchConfigurationName']:
             an_instance = ec2_client.describe_instances(
                 InstanceIds=[
@@ -31,7 +31,7 @@ def __check_ag(ag):
             date = __date2str(an_instance['Reservations'][0][
                               'Instances'][0]['LaunchTime'])
             test = red(" == DIFFERENT == " + date)
-        if instance['LaunchConfigurationName'] != ag[
+        if instance['LaunchConfigurationName'] != aws_ag[
                 'LaunchConfigurationName']:
             print(
                 instance['InstanceId'] +
@@ -74,8 +74,8 @@ def check_all():
     print(green("Checking " +
                 str(len(response['AutoScalingGroups'])) +
                 " autoscaling roups"))
-    for ag in response['AutoScalingGroups']:
-        __check_ag(ag)
+    for aws_ag in response['AutoScalingGroups']:
+        __check_ag(aws_ag)
 
 if len(sys.argv) == 1:
     check_all()
