@@ -3,6 +3,7 @@ import sys
 import pprint
 import boto3
 from fabric.colors import red, yellow, green
+import pprint
 
 VERBOSE = False
 
@@ -13,7 +14,7 @@ def __date2str(dts):
 
 def __check_ag(aws_ag):
     ec2_client = boto3.client('ec2')
-    # pp = pprint.PrettyPrinter(indent=4)
+    pp = pprint.PrettyPrinter(indent=4)
     # pp.pprint(aws_ag)
     print("Checking " + aws_ag['AutoScalingGroupName'])
     if VERBOSE:
@@ -21,37 +22,44 @@ def __check_ag(aws_ag):
     instances = aws_ag['Instances']
     for instance in instances:
         test = ""
-        if instance['LaunchConfigurationName'] != aws_ag[
-                'LaunchConfigurationName']:
-            an_instance = ec2_client.describe_instances(
-                InstanceIds=[
-                    instance['InstanceId'],
-                ],
-            )
-            date = __date2str(an_instance['Reservations'][0][
-                              'Instances'][0]['LaunchTime'])
-            test = red(" == DIFFERENT == " + date)
-        if instance['LaunchConfigurationName'] != aws_ag[
-                'LaunchConfigurationName']:
-            print(
-                instance['InstanceId'] +
-                ": " +
-                instance['LaunchConfigurationName'] +
-                test)
-            print("To terminate the instance:")
-            print(
-                yellow(
-                    "aws autoscaling terminate-instance-in-auto-scaling-group --instance-id " +
-                    instance['InstanceId'] +
-                    " --no-should-decrement-desired-capacity"))
-            print("# https://docs.aws.amazon.com/cli/latest/reference/autoscaling/terminate-instance-in-auto-scaling-group.html")
+        if 'LaunchConfigurationName' not in instance:
+            if aws_ag['AutoScalingGroupName'] == 'tf-asg-20161116094200048536424dng':
+                print(red("=========="))
+                pp.pprint(instance)
+                print(red("No autoscaling group name"))
+                print(red("=========="))
         else:
-            if VERBOSE:
+            if instance['LaunchConfigurationName'] != aws_ag[
+                    'LaunchConfigurationName']:
+                an_instance = ec2_client.describe_instances(
+                    InstanceIds=[
+                        instance['InstanceId'],
+                    ],
+                )
+                date = __date2str(an_instance['Reservations'][0][
+                                  'Instances'][0]['LaunchTime'])
+                test = red(" == DIFFERENT == " + date)
+            if instance['LaunchConfigurationName'] != aws_ag[
+                    'LaunchConfigurationName']:
                 print(
                     instance['InstanceId'] +
                     ": " +
                     instance['LaunchConfigurationName'] +
                     test)
+                print("To terminate the instance:")
+                print(
+                    yellow(
+                        "aws autoscaling terminate-instance-in-auto-scaling-group --instance-id " +
+                        instance['InstanceId'] +
+                        " --no-should-decrement-desired-capacity"))
+                print("# https://docs.aws.amazon.com/cli/latest/reference/autoscaling/terminate-instance-in-auto-scaling-group.html")
+            else:
+                if VERBOSE:
+                    print(
+                        instance['InstanceId'] +
+                        ": " +
+                        instance['LaunchConfigurationName'] +
+                        test)
 #
 
 
