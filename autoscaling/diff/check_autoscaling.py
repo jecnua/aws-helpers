@@ -27,6 +27,12 @@ def __check_ag(aws_ag):
             pp.pprint(instance)
             print(red("No autoscaling group name"))
             print(red("If you are using terraform it may have been deleted. Destroy this node if possible"))
+            print("To terminate the instance:")
+            print(
+                yellow(
+                    "aws autoscaling terminate-instance-in-auto-scaling-group --instance-id " +
+                    instance['InstanceId'] +
+                    " --no-should-decrement-desired-capacity"))
             print(red("=========="))
         else:
             if instance['LaunchConfigurationName'] != aws_ag[
