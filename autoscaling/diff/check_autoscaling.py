@@ -23,11 +23,11 @@ def __check_ag(aws_ag):
     for instance in instances:
         test = ""
         if 'LaunchConfigurationName' not in instance:
-            if aws_ag['AutoScalingGroupName'] == 'tf-asg-20161116094200048536424dng':
-                print(red("=========="))
-                pp.pprint(instance)
-                print(red("No autoscaling group name"))
-                print(red("=========="))
+            print(red("=========="))
+            pp.pprint(instance)
+            print(red("No autoscaling group name"))
+            print(red("If you are using terraform it may have been deleted. Destroy this node if possible"))
+            print(red("=========="))
         else:
             if instance['LaunchConfigurationName'] != aws_ag[
                     'LaunchConfigurationName']:
