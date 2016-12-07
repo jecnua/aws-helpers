@@ -1,23 +1,29 @@
 #
-import sys
 import pprint
 import boto3
 from fabric.colors import red, yellow, green
 import pprint
+import argparse
 
 VERBOSE = False
 
+parser = argparse.ArgumentParser()
+parser.add_argument("-v", "--verbose", help="increase output verbosity",action="store_true")
+parser.add_argument("ag",help="autoscaling group",nargs='?')
+args = parser.parse_args()
+if args.verbose:
+    print("Verbosity turned on")
+    VERBOSE = True
 
 def __date2str(dts):
     return dts.strftime("%Y %m %d %H:%M:%S GMT")
-
 
 def __check_ag(aws_ag):
     ec2_client = boto3.client('ec2')
     pp = pprint.PrettyPrinter(indent=4)
     # pp.pprint(aws_ag)
-    print("Checking " + aws_ag['AutoScalingGroupName'])
     if VERBOSE:
+        print("Checking " + aws_ag['AutoScalingGroupName'])
         print("LaunchConfigurationName: " + aws_ag['LaunchConfigurationName'])
     instances = aws_ag['Instances']
     for instance in instances:
@@ -81,19 +87,20 @@ def check_single(ag_name):
 
 #
 
-
 def check_all():
     client = boto3.client('autoscaling')
     response = client.describe_auto_scaling_groups()
-    print(green("Checking " +
-                str(len(response['AutoScalingGroups'])) +
-                " autoscaling roups"))
+    if VERBOSE:
+        print(green("Checking " +
+                    str(len(response['AutoScalingGroups'])) +
+                    " autoscaling roups"))
     for aws_ag in response['AutoScalingGroups']:
         __check_ag(aws_ag)
 
-if len(sys.argv) == 1:
-    check_all()
-if len(sys.argv) == 2:
-    AUTOSCALING_GROUP_NAME = sys.argv[1]
-    print(green("Checking 1 autoscaling roups"))
+if args.ag:
+    AUTOSCALING_GROUP_NAME = args.ag
+    if VERBOSE:
+        print(green("Checking 1 autoscaling roups"))
     check_single(AUTOSCALING_GROUP_NAME)
+else:
+    check_all()

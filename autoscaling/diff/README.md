@@ -7,6 +7,8 @@
 ## Usage
 
     python check_autoscaling.py <ag_name>
+    python check_autoscaling.py
+    python check_autoscaling.py -v <ag_name>
 
 ## Example of termination
 
