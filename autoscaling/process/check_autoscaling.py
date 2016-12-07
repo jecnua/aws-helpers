@@ -3,9 +3,17 @@ import sys
 import boto3
 from fabric.colors import red, green, yellow, white
 import re
+import argparse
 # import pprint
 
-VERBOSE = True
+# VERBOSE = False
+#
+# parser = argparse.ArgumentParser()
+# parser.add_argument("-v", "--verbose", help="increase output verbosity",action="store_true")
+# args = parser.parse_args()
+# if args.verbose:
+#     print("Verbosity turned on")
+#     VERBOSE = True
 
 def __get_blocked__processes(aws_ag):
     processes_blocked = ""
