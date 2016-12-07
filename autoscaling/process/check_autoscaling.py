@@ -6,7 +6,7 @@ import re
 import argparse
 # import pprint
 
-# VERBOSE = False
+VERBOSE = True
 #
 # parser = argparse.ArgumentParser()
 # parser.add_argument("-v", "--verbose", help="increase output verbosity",action="store_true")
