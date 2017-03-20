@@ -11,7 +11,7 @@ does the job. :D
 
 ## Requirements
 
-There is a Requirements file in every directory.
+There are Requirements file in every directory.
 You can install the python dependencies via:
 
     pip install -r requirements.txt
@@ -24,3 +24,4 @@ You can install the python dependencies via:
 
     autopep8 --in-place autoscaling/metrics/*.py
     autopep8 --in-place autoscaling/diff/*.py
+    autopep8 --in-place autoscaling/process/*.py
