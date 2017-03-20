@@ -8,15 +8,18 @@ import argparse
 VERBOSE = False
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-v", "--verbose", help="increase output verbosity",action="store_true")
-parser.add_argument("ag",help="autoscaling group",nargs='?')
+parser.add_argument("-v", "--verbose",
+                    help="increase output verbosity", action="store_true")
+parser.add_argument("ag", help="autoscaling group", nargs='?')
 args = parser.parse_args()
 if args.verbose:
     print("Verbosity turned on")
     VERBOSE = True
 
+
 def __date2str(dts):
     return dts.strftime("%Y %m %d %H:%M:%S GMT")
+
 
 def __check_ag(aws_ag):
     ec2_client = boto3.client('ec2')
@@ -32,7 +35,8 @@ def __check_ag(aws_ag):
             print(red("=========="))
             pp.pprint(instance)
             print(red("No autoscaling group name"))
-            print(red("If you are using terraform it may have been deleted. Destroy this node if possible"))
+            print(red(
+                "If you are using terraform it may have been deleted. Destroy this node if possible"))
             print("To terminate the instance:")
             print(
                 yellow(
@@ -64,7 +68,8 @@ def __check_ag(aws_ag):
                         "aws autoscaling terminate-instance-in-auto-scaling-group --instance-id " +
                         instance['InstanceId'] +
                         " --no-should-decrement-desired-capacity"))
-                print("# https://docs.aws.amazon.com/cli/latest/reference/autoscaling/terminate-instance-in-auto-scaling-group.html")
+                print(
+                    "# https://docs.aws.amazon.com/cli/latest/reference/autoscaling/terminate-instance-in-auto-scaling-group.html")
             else:
                 if VERBOSE:
                     print(
@@ -87,6 +92,7 @@ def check_single(ag_name):
 
 #
 
+
 def check_all():
     client = boto3.client('autoscaling')
     response = client.describe_auto_scaling_groups()
@@ -96,6 +102,7 @@ def check_all():
                     " autoscaling roups"))
     for aws_ag in response['AutoScalingGroups']:
         __check_ag(aws_ag)
+
 
 if args.ag:
     AUTOSCALING_GROUP_NAME = args.ag

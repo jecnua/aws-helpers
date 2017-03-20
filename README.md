@@ -9,11 +9,18 @@ in each of them :)
 I am not a python developer and the code is sure as hell not so good, but it
 does the job. :D
 
+## Requirements
+
+There is a Requirements file in every directory.
+You can install the python dependencies via:
+
+    pip install -r requirements.txt
+
 ## Env
 
 - Python3
 
 ## Linted automatically
 
-    autopep8 --in-place autoscaling/metrics/check_enabled_metrics_for_ag.py
-    autopep8 --in-place autoscaling/diff/check_autoscaling.py
+    autopep8 --in-place autoscaling/metrics/*.py
+    autopep8 --in-place autoscaling/diff/*.py
