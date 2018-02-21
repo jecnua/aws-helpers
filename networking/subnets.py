@@ -19,14 +19,14 @@ json_result = client.describe_subnets(
 results = {}
 for subnet in json_result['Subnets']:
     az = subnet['AvailabilityZone']
-    name = 'No name'
+    subnet_name = 'No name'
     cidr_block = subnet['CidrBlock']
     subnet_id = subnet['SubnetId']
     if 'Tags' in subnet:
         for aTag in subnet['Tags']:
             if aTag['Key'] == 'Name':
-                name = aTag['Value']
-    toAdd = cidr_block+' '+name+' '+subnet_id
+                subnet_name = aTag['Value']
+    toAdd = (cidr_block, subnet_name, subnet_id)
     if az not in results:
         results[az] = []
     results[az].append(toAdd)
