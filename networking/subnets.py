@@ -45,6 +45,8 @@ for an_az in results:
 if args.available:
     cidrs = [int(re.split('\.', range)[2]) for range in range_ip]
     available_cidr = list(set(range(1, 255)).difference(cidrs))
+    used = sum([len(results[an_az]) for an_az in results])
+    print(f"Found {len(available_cidr)} available ({used} used)")
     print(available_cidr)
 else:
     for an_az in results:
