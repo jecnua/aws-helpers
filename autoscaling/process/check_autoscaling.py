@@ -3,17 +3,21 @@ import sys
 import re
 import boto3
 from fabric.colors import red, green, yellow, white
-# import argparse
+import argparse
 # import pprint
 
-VERBOSE = True
-#
-# parser = argparse.ArgumentParser()
-# parser.add_argument("-v", "--verbose", help="increase output verbosity",action="store_true")
-# args = parser.parse_args()
-# if args.verbose:
-#     print("Verbosity turned on")
-#     VERBOSE = True
+parser = argparse.ArgumentParser()
+parser.add_argument("-a", "--autoscaling-group-name",
+                    help="the name of the autoscaling group")
+parser.add_argument("--verbose", help="increase output verbosity",
+                    action="store_true")
+parser.add_argument('-v', '--version', action='version',
+                    version='%(prog)s 1.0')
+args = parser.parse_args()
+print(args)
+if args.verbose:
+    print("Verbosity turned on")
+    VERBOSE = True
 
 
 def __get_blocked__processes(aws_ag):
@@ -29,7 +33,7 @@ def __analise(aws_ag):
         print("AutoScalingGroupName: " + aws_ag['AutoScalingGroupName'])
         print("LaunchConfigurationName: " + aws_ag['LaunchConfigurationName'] + " || Status: " + red(
             "Blocked " + str(len(aws_ag['SuspendedProcesses'])) + " processes"))
-        if VERBOSE:
+        if args.verbose:
             print("The following processes are blocked >> " +
                   red(processes_blocked))
     else:
@@ -40,7 +44,7 @@ def __analise(aws_ag):
                  aws_ag['AutoScalingGroupName'] + "\""))
     print(green(">> aws autoscaling resume-processes --auto-scaling-group-name=\"" +
                 aws_ag['AutoScalingGroupName'] + "\""))
-    if VERBOSE:
+    if args.verbose:
         splitted = str(aws_ag['AutoScalingGroupARN']).split(":")
         region = splitted[3]
         id_with_no_space = re.sub(r"\s+", '+', aws_ag['AutoScalingGroupName'])
@@ -67,8 +71,7 @@ def __check(filter_for_ag=False):
         __check_ag(aws_ag, filter_for_ag)
 
 
-if len(sys.argv) == 1:
-    __check()
-if len(sys.argv) == 2:
-    AUTOSCALING_GROUP_NAME = sys.argv[1]
-    __check(AUTOSCALING_GROUP_NAME)
+if args.autoscaling_group_name:
+    __check(args.autoscaling_group_name)
+    exit(0)
+__check()
