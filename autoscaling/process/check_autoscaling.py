@@ -1,10 +1,9 @@
-#
+#!/usr/bin/env python
 import sys
 import re
 import boto3
 from fabric.colors import red, green, yellow, white
 import argparse
-# import pprint
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-a", "--autoscaling-group-name",
@@ -31,15 +30,18 @@ def __analise(aws_ag):
     if len(aws_ag['SuspendedProcesses']):
         processes_blocked = __get_blocked__processes(aws_ag)
         print("AutoScalingGroupName: " + aws_ag['AutoScalingGroupName'])
-        print("LaunchConfigurationName: " + aws_ag['LaunchConfigurationName'] + " || Status: " + red(
-            "Blocked " + str(len(aws_ag['SuspendedProcesses'])) + " processes"))
+        print("LaunchConfigurationName: " + aws_ag['LaunchConfigurationName']
+              + " || Status: " +
+              red("Blocked " + str(len(aws_ag['SuspendedProcesses'])) +
+              " processes"))
         if args.verbose:
             print("The following processes are blocked >> " +
                   red(processes_blocked))
     else:
         print("AutoScalingGroupName: " + aws_ag['AutoScalingGroupName'])
         print("LaunchConfigurationName: " +
-              aws_ag['LaunchConfigurationName'] + " || Status: " + green("Unblocked"))
+              aws_ag['LaunchConfigurationName'] + " || Status: " +
+              green("Unblocked"))
     print(yellow(">> aws autoscaling suspend-processes --auto-scaling-group-name=\"" +
                  aws_ag['AutoScalingGroupName'] + "\""))
     print(green(">> aws autoscaling resume-processes --auto-scaling-group-name=\"" +
