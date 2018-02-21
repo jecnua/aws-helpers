@@ -10,6 +10,7 @@ PP = pprint.PrettyPrinter(indent=4)
 EC2_CLIENT = boto3.client('ec2')
 RESULT = {}
 
+
 def _search_old_nodes(age_in_days=30, region='us-east-1'):
     print('Age in days: ' + str(age_in_days))
     print('Region: ' + region)
@@ -37,5 +38,5 @@ def _search_old_nodes(age_in_days=30, region='us-east-1'):
     PP.pprint(sorted(RESULT.items(), key=itemgetter(1), reverse=True))
     # PP.pprint(sorted(RESULT.values()))
 
+
 _search_old_nodes(age_in_days=30, region='us-east-1')
-exit(0)

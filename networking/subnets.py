@@ -32,7 +32,9 @@ for subnet in json_result['Subnets']:
     results[az].append(toAdd)
 
 for an_az in results:
-    print(f"================== {an_az}")
+    print(f"================== {an_az}: {len(results[an_az])} subnets")
     for subnet in results[an_az]:
         print(subnet)
     print("==================")
+
+print(f"Found {sum([len(results[an_az]) for an_az in results])} subnets")
