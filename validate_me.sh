@@ -6,5 +6,6 @@ no_argv_test=$(grep -l --include=\*.py -R 'argv' . | wc -l)
 if [[ $no_argv_test -gt 0 ]]
 then
   grep -l -R 'argv' .
-  echo "ERROR"
+  # echo "ERROR"
+  exit 1
 fi
