@@ -2,8 +2,9 @@
 
 # Don't use argv
 # Use https://docs.python.org/2/library/argparse.html
-no_argv_test=$(grep -l -R 'argv' . | grep -v 'validate_me.sh' | wc -l)
+no_argv_test=$(grep -l --include=\*.py -R 'argv' . | wc -l)
 if [[ $no_argv_test -gt 0 ]]
 then
+  grep -l -R 'argv' .
   echo "ERROR"
 fi
