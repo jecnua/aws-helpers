@@ -2,6 +2,13 @@
 # Just to have a look at how the subnets are distribuited
 
 import boto3
+import re
+import argparse
+
+parser = argparse.ArgumentParser("")
+parser.add_argument('-a', '--available', action='store_true',
+                    help='List the available CIDR')
+args = parser.parse_args()
 
 client = boto3.client('ec2')
 json_result = client.describe_subnets(
@@ -31,10 +38,18 @@ for subnet in json_result['Subnets']:
         results[az] = []
     results[az].append(toAdd)
 
+range_ip = []
 for an_az in results:
-    print(f"================== {an_az}: {len(results[an_az])} subnets")
     for subnet in results[an_az]:
-        print(subnet)
-    print("==================")
-
-print(f"Found {sum([len(results[an_az]) for an_az in results])} subnets")
+        range_ip.append(re.split('/', subnet[0])[0])
+if args.available:
+    cidrs = [int(re.split('\.', range)[2]) for range in range_ip]
+    available_cidr = list(set(range(1, 255)).difference(cidrs))
+    print(available_cidr)
+else:
+    for an_az in results:
+        print(f"================== {an_az}: {len(results[an_az])} subnets")
+        for subnet in results[an_az]:
+            print(subnet)
+        print("==================")
+    print(f"Found {sum([len(results[an_az]) for an_az in results])} subnets")
