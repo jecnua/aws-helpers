@@ -35,8 +35,8 @@ def _find_cers_alb(region_name='us-east-1'):
             if 'Certificates' in a_listener:
                 for a_cert in a_listener['Certificates']:
                     cert_arn = a_cert['CertificateArn']
-                    prot = a_listener['Port']
-                    print("ALB : " + name + " : (" + str(prot) + ") " + cert_arn)
+                    port = a_listener['Port']
+                    print("ALB : " + name + " : (" + str(port) + ") " + cert_arn)
 
 
 _find_certs_elb()
